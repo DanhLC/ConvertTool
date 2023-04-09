@@ -57,13 +57,13 @@
 			this.panel1.Location = new System.Drawing.Point(13, 12);
 			this.panel1.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
 			this.panel1.Name = "panel1";
-			this.panel1.Size = new System.Drawing.Size(700, 425);
+			this.panel1.Size = new System.Drawing.Size(741, 425);
 			this.panel1.TabIndex = 1;
 			// 
 			// btnImport
 			// 
 			this.btnImport.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-			this.btnImport.Location = new System.Drawing.Point(397, -1);
+			this.btnImport.Location = new System.Drawing.Point(438, -1);
 			this.btnImport.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
 			this.btnImport.Name = "btnImport";
 			this.btnImport.Size = new System.Drawing.Size(94, 25);
@@ -76,7 +76,7 @@
 			// btnCopyB
 			// 
 			this.btnCopyB.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-			this.btnCopyB.Location = new System.Drawing.Point(601, 0);
+			this.btnCopyB.Location = new System.Drawing.Point(642, 0);
 			this.btnCopyB.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
 			this.btnCopyB.Name = "btnCopyB";
 			this.btnCopyB.Size = new System.Drawing.Size(94, 25);
@@ -88,7 +88,7 @@
 			// btnCopyA
 			// 
 			this.btnCopyA.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-			this.btnCopyA.Location = new System.Drawing.Point(499, 0);
+			this.btnCopyA.Location = new System.Drawing.Point(540, 0);
 			this.btnCopyA.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
 			this.btnCopyA.Name = "btnCopyA";
 			this.btnCopyA.Size = new System.Drawing.Size(94, 25);
@@ -106,7 +106,7 @@
 			this.tbConvertData.Multiline = true;
 			this.tbConvertData.Name = "tbConvertData";
 			this.tbConvertData.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-			this.tbConvertData.Size = new System.Drawing.Size(346, 395);
+			this.tbConvertData.Size = new System.Drawing.Size(387, 395);
 			this.tbConvertData.TabIndex = 6;
 			// 
 			// btnExport
@@ -148,8 +148,8 @@
 			this.cbConvetType.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
 			this.cbConvetType.FormattingEnabled = true;
 			this.cbConvetType.Items.AddRange(new object[] {
-            "Big Integer -> Hex",
-            "Hex -> Big Integer"});
+            "Hex -> Big Integer",
+            "Big Integer -> Hex"});
 			this.cbConvetType.Location = new System.Drawing.Point(0, 0);
 			this.cbConvetType.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
 			this.cbConvetType.Name = "cbConvetType";
@@ -160,7 +160,7 @@
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.ClientSize = new System.Drawing.Size(721, 450);
+			this.ClientSize = new System.Drawing.Size(762, 450);
 			this.Controls.Add(this.panel1);
 			this.Font = new System.Drawing.Font("Arial", 9F);
 			this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));

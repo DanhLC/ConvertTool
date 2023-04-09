@@ -48,7 +48,7 @@ namespace ConvertApp
 				tbConvertData.Text = string.Empty;
 
 				//BigInteger to hex
-				if (cbConvetType.SelectedIndex == 0 && readDatas.Length > 0)
+				if (cbConvetType.SelectedIndex == 1 && readDatas.Length > 0)
 				{
 					var convertDatas = string.Empty;
 
@@ -59,11 +59,9 @@ namespace ConvertApp
 					}
 
 					tbConvertData.Text = convertDatas;
-
-					MessageBox.Show("Chuyển đổi thành công");
 				}
 				//Hex to bigInteger
-				else if (cbConvetType.SelectedIndex == 1 && readDatas.Length > 0)
+				else if (cbConvetType.SelectedIndex == 0 && readDatas.Length > 0)
 				{
 					var convertDatas = string.Empty;
 
@@ -74,7 +72,6 @@ namespace ConvertApp
 					}
 
 					tbConvertData.Text = convertDatas;
-					MessageBox.Show("Chuyển đổi thành công");
 				}
 				else
 				{
@@ -140,14 +137,14 @@ namespace ConvertApp
 				var stringSeparators = new string[] { "\r\n" };
 				var readDatas = tbReadData.Text.Split(stringSeparators, StringSplitOptions.None);
 
-				if (cbConvetType.SelectedIndex == 0 && readDatas.Length > 0)
-				{
-					CreateExcelData(0, readDatas);
-					MessageBox.Show(this, "Tạo file export thành công", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
-				}
-				else if (cbConvetType.SelectedIndex == 1 && readDatas.Length > 0)
+				if (cbConvetType.SelectedIndex == 1&& readDatas.Length > 0)
 				{
 					CreateExcelData(1, readDatas);
+					MessageBox.Show(this, "Tạo file export thành công", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
+				}
+				else if (cbConvetType.SelectedIndex == 0 && readDatas.Length > 0)
+				{
+					CreateExcelData(0, readDatas);
 					MessageBox.Show(this, "Tạo file export thành công", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
 				}
 				else
@@ -175,7 +172,8 @@ namespace ConvertApp
 			if (!File.Exists(path)) throw new Exception("Không tìm thấy file ConvertData.xlsx, vui lòng tạo 1 file mới");
 
 			var dialog = new SaveFileDialog();
-			dialog.FileName = string.Format("ConvertData_{0:ddMMyyyy-HHssMM}.xlsx", DateTime.Now);
+			var fileName = (type == 0) ? "HexToBigInteger" : "BigIntegerToHex";
+			dialog.FileName = string.Format("{0}_{1:ddMMyyyy-HHssMM}.xlsx", fileName, DateTime.Now);
 			dialog.Filter = "Excel(*.xlsx)|*.xlsx";
 
 			if (dialog.ShowDialog() == DialogResult.OK)
@@ -188,12 +186,16 @@ namespace ConvertApp
 				{
 					if (excelApp == null) throw new Exception("Máy chưa được cài đặt excel");
 
+					excelSheet.Cells.ClearContents();
+					excelSheet.Cells.Clear();
+
 					excelSheet.Cells[1, 1].numberformat = "@";
-					excelSheet.Cells[1, 1].value = (type == 0) ? "Big Integer" : "Hex";
+					excelSheet.Cells[1, 1].value = (type == 1) ? "Big Integer" : "Hex";
 					excelSheet.Cells[1, 2].numberformat = "@";
-					excelSheet.Cells[1, 2].value = (type == 0) ? "Hex" : "Big Integer";
+					excelSheet.Cells[1, 2].value = (type == 1) ? "Hex" : "Big Integer";
 
 					var plainId = 2;
+
 					foreach (var plainData in readDatas)
 					{
 						excelSheet.Cells[plainId, 1].numberformat = "@";
@@ -205,7 +207,7 @@ namespace ConvertApp
 					foreach (var convertData in readDatas)
 					{
 						excelSheet.Cells[convertId, 2].numberformat = "@";
-						excelSheet.Cells[convertId, 2].value = (type == 0) ? BigIntegerToHex(convertData.ToString()) : HexToBigInteger(convertData.ToString());
+						excelSheet.Cells[convertId, 2].value = (type == 1) ? BigIntegerToHex(convertData.ToString()) : HexToBigInteger(convertData.ToString());
 						convertId++;
 					}
 
