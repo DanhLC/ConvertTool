@@ -220,13 +220,15 @@ namespace ConvertApp
 					excelBook = null;
 					excelSheet = null;
 				}
-				catch
+				catch(Exception ex)
 				{
 					excelApp.Quit();
 					System.Runtime.InteropServices.Marshal.ReleaseComObject(excelApp);
 					excelApp = null;
 					excelBook = null;
 					excelSheet = null;
+
+					throw new Exception(ex.Message);
 				}
 			}
 		}
