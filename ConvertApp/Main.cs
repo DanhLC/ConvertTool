@@ -4,6 +4,7 @@ using System;
 using System.Drawing;
 using System.IO;
 using System.Numerics;
+using System.Threading;
 using System.Windows.Forms;
 
 namespace ConvertApp
@@ -30,9 +31,14 @@ namespace ConvertApp
 		/// <param name="e"></param>
 		private void btnConvert_Click(object sender, System.EventArgs e)
 		{
+			var waitForm = new WaitFormFunc();
+
 			try
 			{
 				if (string.IsNullOrEmpty(tbReadData.Text.Trim())) throw new Exception("Không có dữ liệu để chuyển đổi");
+
+				waitForm.ShowProcess();
+				Thread.Sleep(2000);
 
 				var stringSeparators = new string[] { "\r\n" };
 				var readDatas = tbReadData.Text.Split(stringSeparators, StringSplitOptions.None);
@@ -68,9 +74,18 @@ namespace ConvertApp
 
 				if (readDatas.Length > 0) setConvertDataValue(readDatas, typeExcute);
 				else throw new Exception("Đã có lỗi xảy ra không khởi tạo đọc dữ liệu chuyển đổi");
+
+				BeginInvoke(new Action(() =>
+				{
+					waitForm.CloseProcess();
+				}));
 			}
 			catch (Exception ex)
 			{
+				BeginInvoke(new Action(() =>
+				{
+					waitForm.CloseProcess();
+				}));
 				MessageBox.Show(ex.Message);
 			}
 		}
@@ -82,9 +97,14 @@ namespace ConvertApp
 		/// <param name="e"></param>
 		private void btnExport_Click(object sender, System.EventArgs e)
 		{
+			var waitForm = new WaitFormFunc();
+
 			try
 			{
 				if (string.IsNullOrEmpty(tbReadData.Text.Trim())) throw new Exception("Không có dữ liệu để chuyển đổi");
+
+				waitForm.ShowProcess();
+				Thread.Sleep(2000);
 
 				var stringSeparators = new string[] { "\r\n" };
 				var readDatas = tbReadData.Text.Split(stringSeparators, StringSplitOptions.None);
@@ -104,7 +124,7 @@ namespace ConvertApp
 					worksheet1.Cells[1, 1].Style.Font.Bold = true;
 					worksheet1.Cells[1, 1].Style.Font.Size = 20;
 					worksheet1.Cells[1, 1].Style.Font.Name = "Arial";
-					worksheet1.Cells["A1:D1"].Merge = true;
+					worksheet1.Cells["A1:E1"].Merge = true;
 
 					worksheet1.Cells[3, 1].Value = "STT";
 					var headerColumsOriginal = (typeExcute == 0) ? "Hex"
@@ -140,7 +160,8 @@ namespace ConvertApp
 					var identityNumber = 1;
 					foreach (var data in readDatas)
 					{
-						if ()
+						if (CGlobal.IsEmptyString(data)) continue;
+
 						worksheet1.Cells[rowInitDetail, 1].Value = identityNumber;
 						worksheet1.Cells[rowInitDetail, 1].Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
 						worksheet1.Cells[rowInitDetail, 1].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
@@ -194,18 +215,18 @@ namespace ConvertApp
 							var excelFile = new FileInfo(filePath);
 							excelPackage.SaveAs(excelFile);
 
-							//BeginInvoke(new Action(() =>
-							//{
-							//	waitForm.CloseProcess();
-							//}));
+							BeginInvoke(new Action(() =>
+							{
+								waitForm.CloseProcess();
+							}));
 							MessageBox.Show(string.Format("Lưu thành công, file: {0}", Path.GetFileName(filePath)));
 						}
 						else
 						{
-							//BeginInvoke(new Action(() =>
-							//{
-							//	waitForm.CloseProcess();
-							//}));
+							BeginInvoke(new Action(() =>
+							{
+								waitForm.CloseProcess();
+							}));
 						}
 					}
 
@@ -214,6 +235,10 @@ namespace ConvertApp
 			}
 			catch (Exception ex)
 			{
+				BeginInvoke(new Action(() =>
+				{
+					waitForm.CloseProcess();
+				}));
 				MessageBox.Show(ex.Message);
 			}
 		}
@@ -238,6 +263,16 @@ namespace ConvertApp
 		{
 			Clipboard.SetText(tbConvertData.Text);
 			MessageBox.Show(this, "Đã copy cột 2", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
+		}
+
+		/// <summary>
+		/// Clear data
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void btnClear_Click(object sender, EventArgs e)
+		{
+			tbReadData.Text = tbConvertData.Text = string.Empty;
 		}
 
 		#endregion

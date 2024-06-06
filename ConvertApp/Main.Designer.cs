@@ -37,6 +37,7 @@
 			this.tbReadData = new System.Windows.Forms.TextBox();
 			this.btnConvert = new System.Windows.Forms.Button();
 			this.cbConvetType = new System.Windows.Forms.ComboBox();
+			this.btnClear = new System.Windows.Forms.Button();
 			this.panel1.SuspendLayout();
 			this.SuspendLayout();
 			// 
@@ -45,6 +46,7 @@
 			this.panel1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+			this.panel1.Controls.Add(this.btnClear);
 			this.panel1.Controls.Add(this.btnCopyB);
 			this.panel1.Controls.Add(this.btnCopyA);
 			this.panel1.Controls.Add(this.tbConvertData);
@@ -143,6 +145,18 @@
 			this.cbConvetType.Size = new System.Drawing.Size(150, 23);
 			this.cbConvetType.TabIndex = 1;
 			// 
+			// btnClear
+			// 
+			this.btnClear.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+			this.btnClear.Location = new System.Drawing.Point(438, -1);
+			this.btnClear.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+			this.btnClear.Name = "btnClear";
+			this.btnClear.Size = new System.Drawing.Size(94, 25);
+			this.btnClear.TabIndex = 9;
+			this.btnClear.Text = "Clear dữ liệu";
+			this.btnClear.UseVisualStyleBackColor = true;
+			this.btnClear.Click += new System.EventHandler(this.btnClear_Click);
+			// 
 			// Main
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
@@ -171,6 +185,7 @@
 		private System.Windows.Forms.Button btnCopyA;
 		private System.Windows.Forms.Button button2;
 		private System.Windows.Forms.Button btnCopyB;
+		private System.Windows.Forms.Button btnClear;
 	}
 }
 
