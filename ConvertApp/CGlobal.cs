@@ -75,7 +75,10 @@ namespace ConvertApp
 
 				if (currentTimestamp < 1) return string.Empty;
 
-				return new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc).AddMilliseconds(currentTimestamp).ToString(format);
+				return new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
+					.AddMilliseconds(currentTimestamp)
+					.ToLocalTime()
+					.ToString(format);
 			}
 			catch
 			{
@@ -98,8 +101,8 @@ namespace ConvertApp
 				if (currentDateTime == null) return string.Empty;
 
 				var unixEpoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
-				var timeSpan = (currentDateTime ?? DateTime.Now).ToUniversalTime() - unixEpoch;
-				var timestamp = (long)timeSpan.TotalMilliseconds;
+				var timeSpan = (currentDateTime.Value.ToUniversalTime() - unixEpoch);
+				var timestamp = ToLong(timeSpan.TotalMilliseconds);
 				return timestamp.ToString();
 			}
 			catch
