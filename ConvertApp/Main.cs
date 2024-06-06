@@ -191,7 +191,7 @@ namespace ConvertApp
 
 					var allCellsSheet1 = worksheet1.Cells[4, 1, worksheet1.Dimension.End.Row, worksheet1.Dimension.End.Column];
 					var cellFontSheet1 = allCellsSheet1.Style.Font;
-					cellFontSheet1.SetFromFont("Arial", 11, false, false, false, false);
+					cellFontSheet1.SetFromFont("Arial", 11);
 					worksheet1.Cells.AutoFitColumns();
 
 					#endregion

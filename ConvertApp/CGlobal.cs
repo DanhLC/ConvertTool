@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Configuration;
+using System.Globalization;
 using System.Numerics;
 
 namespace ConvertApp
@@ -69,10 +71,11 @@ namespace ConvertApp
 			try
 			{
 				var currentTimestamp = ToLong(timeStamp);
+				var format = ValidDateFormat(ConfigurationManager.AppSettings["FormatDateTime"]);
 
 				if (currentTimestamp < 1) return string.Empty;
 
-				return new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc).AddMilliseconds(currentTimestamp).ToString("dd/MM/yyyy");
+				return new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc).AddMilliseconds(currentTimestamp).ToString(format);
 			}
 			catch
 			{
@@ -89,7 +92,8 @@ namespace ConvertApp
 		{
 			try
 			{
-				var currentDateTime = ToDateTimenullWithFormat(datetime);
+				var format = ValidDateFormat(ConfigurationManager.AppSettings["FormatDateTime"]);
+				var currentDateTime = ToDateTimenullWithFormat(datetime, format);
 
 				if (currentDateTime == null) return string.Empty;
 
@@ -134,6 +138,54 @@ namespace ConvertApp
 			try
 			{
 				return string.IsNullOrEmpty(obj) || string.IsNullOrWhiteSpace(obj);
+			}
+			catch
+			{
+				return false;
+			}
+		}
+
+		/// <summary>
+		/// Valid date format
+		/// </summary>
+		/// <param name="format"></param>
+		/// <returns></returns>
+		public static string ValidDateFormat(string format)
+		{
+			try
+			{
+				var dateTimeTest = DateTime.Now;
+				DateTime result;
+
+				if (IsValidDateTimeFormat(format, out result))
+				{
+					return format;
+				}
+				else
+				{
+					return "dd/MM/yyyy";
+				}
+			}
+			catch
+			{
+				return "dd/MM/yyyy";
+			}
+		}
+
+		/// <summary>
+		/// Is valid datetime format
+		/// </summary>
+		/// <param name="format"></param>
+		/// <param name="result"></param>
+		/// <returns></returns>
+		public static bool IsValidDateTimeFormat(string format, out DateTime result)
+		{
+			result = DateTime.MinValue;
+
+			try
+			{
+				var dateTimeTest = new DateTime(2000, 1, 1); 
+				return DateTime.TryParseExact(dateTimeTest.ToString(format), format, CultureInfo.InvariantCulture, DateTimeStyles.None, out result);
 			}
 			catch
 			{
