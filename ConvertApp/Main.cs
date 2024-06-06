@@ -49,7 +49,7 @@ namespace ConvertApp
 				{
 					var convertDatas = string.Empty;
 
-					foreach (var item in readDatas)
+					foreach (var item in value)
 					{
 						try
 						{
