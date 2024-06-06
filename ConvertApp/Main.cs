@@ -1,4 +1,7 @@
-﻿using System;
+﻿using OfficeOpenXml;
+using OfficeOpenXml.Style;
+using System;
+using System.Drawing;
 using System.IO;
 using System.Numerics;
 using System.Windows.Forms;
@@ -10,23 +13,15 @@ namespace ConvertApp
 	/// </summary>
 	public partial class Main : Form
 	{
-		#region Properties
-
-		public string plainImportData { get; set; }
-
-		#endregion
-		/// <summary>
-		/// On init
-		/// </summary>
 		public Main()
 		{
 			InitializeComponent();
 
 			// First Load
 			cbConvetType.SelectedIndex = 0;
-
-			if (!string.IsNullOrEmpty(plainImportData)) tbReadData.Text = plainImportData;
 		}
+
+		#region Button event
 
 		/// <summary>
 		/// Convert onclick
@@ -37,85 +32,46 @@ namespace ConvertApp
 		{
 			try
 			{
-				if (string.IsNullOrEmpty(tbReadData.Text.Trim()))
-				{
-					MessageBox.Show("Không có dữ liệu để chuyển đổi");
-					return;
-				}
+				if (string.IsNullOrEmpty(tbReadData.Text.Trim())) throw new Exception("Không có dữ liệu để chuyển đổi");
 
 				var stringSeparators = new string[] { "\r\n" };
 				var readDatas = tbReadData.Text.Split(stringSeparators, StringSplitOptions.None);
 				tbConvertData.Text = string.Empty;
 
-				//BigInteger to hex
-				if (cbConvetType.SelectedIndex == 1 && readDatas.Length > 0)
+				// 0: Hex to bigInteger | 1: BigInteger to hex  | 2: Timestamp to datetime | 3: DateTime to timestamp
+				Action<string[], int> setConvertDataValue = (value, type) =>
 				{
 					var convertDatas = string.Empty;
 
 					foreach (var item in readDatas)
 					{
-						var newDatas = BigIntegerToHex(item.ToString());
-						convertDatas += string.Format("{0}\r\n", newDatas);
+						try
+						{
+							var newDatas = string.Empty;
+
+							if (type == 0) newDatas = CGlobal.HexToBigInteger(item.ToString());
+							else if (type == 1) newDatas = CGlobal.BigIntegerToHex(item.ToString());
+							else if (type == 2) newDatas = CGlobal.TimestampToDateTime(item.ToString());
+							else if (type == 3) newDatas = CGlobal.DateTimeToTimestamp(item.ToString());
+
+							convertDatas += string.Format("{0}\r\n", newDatas);
+						}
+						catch 
+						{
+							convertDatas += string.Format("{0}\r\n", string.Empty);
+						}
 					}
 
 					tbConvertData.Text = convertDatas;
-				}
-				//Hex to bigInteger
-				else if (cbConvetType.SelectedIndex == 0 && readDatas.Length > 0)
-				{
-					var convertDatas = string.Empty;
+				};
+				var typeExcute = cbConvetType.SelectedIndex;
 
-					foreach (var item in readDatas)
-					{
-						var newDatas = HexToBigInteger(item.ToString());
-						convertDatas += string.Format("{0}\r\n", newDatas);
-					}
-
-					tbConvertData.Text = convertDatas;
-				}
-				else
-				{
-					MessageBox.Show("Đã có lỗi xảy ra không khởi tạo đọc dữ liệu chuyển đổi");
-				}
+				if (readDatas.Length > 0) setConvertDataValue(readDatas, typeExcute);
+				else throw new Exception("Đã có lỗi xảy ra không khởi tạo đọc dữ liệu chuyển đổi");
 			}
 			catch (Exception ex)
 			{
-				MessageBox.Show(string.Format("Lỗi: {0}", ex.Message));
-			}
-		}
-
-		/// <summary>
-		/// Biginteger to hex
-		/// </summary>
-		/// <param name="strBigInteger">Big integer string</param>
-		public string BigIntegerToHex(string strBigInteger)
-		{
-			try
-			{
-				BigInteger bigIntegerConvert = 0;
-				bigIntegerConvert = BigInteger.Parse(strBigInteger);
-
-				return bigIntegerConvert.ToString("X");
-			}
-			catch
-			{
-				return string.Empty;
-			}
-		}
-
-		/// <summary>
-		/// Hex to biginteger
-		/// </summary>
-		/// <param name="strHex">Hex string</param>
-		public string HexToBigInteger(string strHex)
-		{
-			try
-			{
-				return BigInteger.Parse(strHex, System.Globalization.NumberStyles.HexNumber).ToString();
-			}
-			catch
-			{
-				return string.Empty;
+				MessageBox.Show(ex.Message);
 			}
 		}
 
@@ -128,122 +84,140 @@ namespace ConvertApp
 		{
 			try
 			{
-				if (string.IsNullOrEmpty(tbReadData.Text.Trim()))
-				{
-					MessageBox.Show("Không có dữ liệu để chuyển đổi");
-					return;
-				}
+				if (string.IsNullOrEmpty(tbReadData.Text.Trim())) throw new Exception("Không có dữ liệu để chuyển đổi");
 
 				var stringSeparators = new string[] { "\r\n" };
 				var readDatas = tbReadData.Text.Split(stringSeparators, StringSplitOptions.None);
+				var typeExcute = cbConvetType.SelectedIndex;
 
-				if (cbConvetType.SelectedIndex == 1&& readDatas.Length > 0)
+				ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
+				using (ExcelPackage excelPackage = new ExcelPackage())
 				{
-					CreateExcelData(1, readDatas);
-					MessageBox.Show(this, "Tạo file export thành công", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
-				}
-				else if (cbConvetType.SelectedIndex == 0 && readDatas.Length > 0)
-				{
-					CreateExcelData(0, readDatas);
-					MessageBox.Show(this, "Tạo file export thành công", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
-				}
-				else
-				{
-					MessageBox.Show(this, "Tạo file export thất bại do không tìm thấy record", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
+					#region Sheet 1: Báo cáo dữ liệu trụ bơm
+
+					var worksheet1 = excelPackage.Workbook.Worksheets.Add("Trang 1");
+					var title = string.Format("THỐNG KÊ DỮ LIỆU CHUYỂN ĐỔI TỪ {0}", (typeExcute == 0) ? "HEX SANG BIGINT"
+							: (typeExcute == 1) ? "BIGINT SANG HEX"
+								: (typeExcute == 2) ? "TIMESTAMP SANG DATETIME"
+									: (typeExcute == 3) ? "DATETIME SANG TIMESTAMP" : string.Empty);
+					worksheet1.Cells[1, 1].Value = title;
+					worksheet1.Cells[1, 1].Style.Font.Bold = true;
+					worksheet1.Cells[1, 1].Style.Font.Size = 20;
+					worksheet1.Cells[1, 1].Style.Font.Name = "Arial";
+					worksheet1.Cells["A1:D1"].Merge = true;
+
+					worksheet1.Cells[3, 1].Value = "STT";
+					var headerColumsOriginal = (typeExcute == 0) ? "Hex"
+						: (typeExcute == 1) ? "BigInt"
+							: (typeExcute == 2) ? "Timestamp"
+								: (typeExcute == 3) ? "Datetime" : string.Empty;
+					worksheet1.Cells[3, 2].Value = headerColumsOriginal;
+
+					var headerColumsTransfer = (typeExcute == 0) ? "BigInt"
+						: (typeExcute == 1) ? "Hex"
+							: (typeExcute == 2) ? "Datetime"
+								: (typeExcute == 3) ? "Timestamp" : string.Empty;
+					worksheet1.Cells[3, 3].Value = headerColumsTransfer;
+
+					for (int i = 1; i <= 3; i++)
+					{
+						worksheet1.Cells[3, i].Style.Fill.PatternType = ExcelFillStyle.Solid;
+						worksheet1.Cells[3, i].Style.Fill.BackgroundColor.SetColor(ColorTranslator.FromHtml("#F39C12"));
+						worksheet1.Cells[3, i].Style.Font.Size = 11;
+						worksheet1.Cells[3, i].Style.Font.Name = "Arial";
+						worksheet1.Cells[3, i].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+						worksheet1.Cells[3, i].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+						worksheet1.Cells[3, i].Style.Font.Bold = true;
+						worksheet1.Cells[3, i].Style.Border.Top.Style = ExcelBorderStyle.Thin;
+						worksheet1.Cells[3, i].Style.Border.Left.Style = ExcelBorderStyle.Thin;
+						worksheet1.Cells[3, i].Style.Border.Right.Style = ExcelBorderStyle.Thin;
+						worksheet1.Cells[3, i].Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
+						worksheet1.Column(i).Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+						worksheet1.Column(i).Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+					}
+
+					var rowInitDetail = 4;
+					var identityNumber = 1;
+					foreach (var data in readDatas)
+					{
+						if ()
+						worksheet1.Cells[rowInitDetail, 1].Value = identityNumber;
+						worksheet1.Cells[rowInitDetail, 1].Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
+						worksheet1.Cells[rowInitDetail, 1].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+
+						worksheet1.Cells[rowInitDetail, 2].Value = data;
+						worksheet1.Cells[rowInitDetail, 2].Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
+
+						var transferData = string.Empty;
+
+						if (typeExcute == 0) transferData = CGlobal.HexToBigInteger(data);
+						else if (typeExcute == 1) transferData = CGlobal.BigIntegerToHex(data);
+						else if (typeExcute == 2) transferData = CGlobal.TimestampToDateTime(data);
+						else if (typeExcute == 3) transferData = CGlobal.DateTimeToTimestamp(data); 
+						
+						worksheet1.Cells[rowInitDetail, 3].Value = transferData;
+						worksheet1.Cells[rowInitDetail, 3].Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
+
+						for (int i = 1; i < 4; i++)
+						{
+							worksheet1.Cells[rowInitDetail, i].Style.Border.BorderAround(ExcelBorderStyle.Thin, Color.Black);
+							worksheet1.Cells[rowInitDetail, i].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+						}
+
+						rowInitDetail++;
+						identityNumber++;
+					}
+
+					var allCellsSheet1 = worksheet1.Cells[4, 1, worksheet1.Dimension.End.Row, worksheet1.Dimension.End.Column];
+					var cellFontSheet1 = allCellsSheet1.Style.Font;
+					cellFontSheet1.SetFromFont("Arial", 11, false, false, false, false);
+					worksheet1.Cells.AutoFitColumns();
+
+					#endregion
+
+					#region Export data
+
+					using (var saveFileDialog = new SaveFileDialog())
+					{
+						saveFileDialog.Filter = "Excel files (*.xlsx)|*.xlsx";
+						saveFileDialog.Title = "Chọn vị trí lưu trữ tệp Excel";
+						saveFileDialog.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
+						var fileName = string.Format("Thống kê dữ liệu chuyển đổi từ {0}", (typeExcute == 0) ? "Hex sang Bigint"
+							: (typeExcute == 1) ? "Bigint sang Hex"	
+								: (typeExcute == 2) ? "Timestamp sang Datetime"
+									: (typeExcute == 3) ? "Datetime sang Timestamp" : string.Empty);
+						saveFileDialog.FileName = string.Format("{0}_{1:ddMMyyyy}_{1:HHmmss}.xlsx", fileName, DateTime.Now);
+
+						if (saveFileDialog.ShowDialog() == DialogResult.OK)
+						{
+							var filePath = saveFileDialog.FileName;
+							var excelFile = new FileInfo(filePath);
+							excelPackage.SaveAs(excelFile);
+
+							//BeginInvoke(new Action(() =>
+							//{
+							//	waitForm.CloseProcess();
+							//}));
+							MessageBox.Show(string.Format("Lưu thành công, file: {0}", Path.GetFileName(filePath)));
+						}
+						else
+						{
+							//BeginInvoke(new Action(() =>
+							//{
+							//	waitForm.CloseProcess();
+							//}));
+						}
+					}
+
+					#endregion
 				}
 			}
 			catch (Exception ex)
 			{
-				MessageBox.Show(string.Format("Lỗi: {0}", ex.Message));
+				MessageBox.Show(ex.Message);
 			}
 		}
-
-		/// <summary>
-		/// Create excel data
-		/// </summary>
-		/// <param name="type"></param>
-		/// <param name="readDatas"></param>
-		protected void CreateExcelData(int type = 0, string[] readDatas = null)
-		{
-			if (readDatas == null) return;
-
-			var path = string.Format("{0}/ConvertData.xlsx", System.IO.Directory.GetCurrentDirectory());
-
-			if (!File.Exists(path)) throw new Exception("Không tìm thấy file ConvertData.xlsx, vui lòng tạo 1 file mới");
-
-			var dialog = new SaveFileDialog();
-			var fileName = (type == 0) ? "HexToBigInteger" : "BigIntegerToHex";
-			dialog.FileName = string.Format("{0}_{1:ddMMyyyy-HHssMM}.xlsx", fileName, DateTime.Now);
-			dialog.Filter = "Excel(*.xlsx)|*.xlsx";
-
-			if (dialog.ShowDialog() == DialogResult.OK)
-			{
-				var excelApp = new Microsoft.Office.Interop.Excel.Application();
-				var excelBook = excelApp.Workbooks.Open(path);
-				var excelSheet = excelBook.Sheets[1];
-
-				try
-				{
-					if (excelApp == null) throw new Exception("Máy chưa được cài đặt excel");
-
-					excelSheet.Cells.ClearContents();
-					excelSheet.Cells.Clear();
-
-					excelSheet.Cells[1, 1].numberformat = "@";
-					excelSheet.Cells[1, 1].value = (type == 1) ? "Big Integer" : "Hex";
-					excelSheet.Cells[1, 2].numberformat = "@";
-					excelSheet.Cells[1, 2].value = (type == 1) ? "Hex" : "Big Integer";
-
-					var plainId = 2;
-
-					foreach (var plainData in readDatas)
-					{
-						excelSheet.Cells[plainId, 1].numberformat = "@";
-						excelSheet.Cells[plainId, 1].value = plainData;
-						plainId++;
-					}
-
-					var convertId = 2;
-					foreach (var convertData in readDatas)
-					{
-						excelSheet.Cells[convertId, 2].numberformat = "@";
-						excelSheet.Cells[convertId, 2].value = (type == 1) ? BigIntegerToHex(convertData.ToString()) : HexToBigInteger(convertData.ToString());
-						convertId++;
-					}
-
-					excelBook.Save();
-					excelApp.Workbooks.Close();
-					excelApp.Quit();
-					System.Runtime.InteropServices.Marshal.ReleaseComObject(excelApp);
-					File.Copy(path, dialog.FileName, true);
-					excelApp = null;
-					excelBook = null;
-					excelSheet = null;
-				}
-				catch(Exception ex)
-				{
-					excelApp.Quit();
-					System.Runtime.InteropServices.Marshal.ReleaseComObject(excelApp);
-					excelApp = null;
-					excelBook = null;
-					excelSheet = null;
-
-					throw new Exception(ex.Message);
-				}
-			}
-		}
-
-		/// <summary>
-		/// Import Excel
-		/// </summary>
-		/// <param name="sender"></param>
-		/// <param name="e"></param>
-		private void btnImport_Click(object sender, EventArgs e)
-		{
-			var import = new Import();
-			import.Show();
-		}
-
+		
 		/// <summary>
 		/// Copy data columns A
 		/// </summary>
@@ -265,5 +239,7 @@ namespace ConvertApp
 			Clipboard.SetText(tbConvertData.Text);
 			MessageBox.Show(this, "Đã copy cột 2", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
 		}
+
+		#endregion
 	}
 }

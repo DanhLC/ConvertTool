@@ -30,7 +30,6 @@
 		{
 			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Main));
 			this.panel1 = new System.Windows.Forms.Panel();
-			this.btnImport = new System.Windows.Forms.Button();
 			this.btnCopyB = new System.Windows.Forms.Button();
 			this.btnCopyA = new System.Windows.Forms.Button();
 			this.tbConvertData = new System.Windows.Forms.TextBox();
@@ -46,7 +45,6 @@
 			this.panel1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-			this.panel1.Controls.Add(this.btnImport);
 			this.panel1.Controls.Add(this.btnCopyB);
 			this.panel1.Controls.Add(this.btnCopyA);
 			this.panel1.Controls.Add(this.tbConvertData);
@@ -59,19 +57,6 @@
 			this.panel1.Name = "panel1";
 			this.panel1.Size = new System.Drawing.Size(741, 425);
 			this.panel1.TabIndex = 1;
-			// 
-			// btnImport
-			// 
-			this.btnImport.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-			this.btnImport.Location = new System.Drawing.Point(438, -1);
-			this.btnImport.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-			this.btnImport.Name = "btnImport";
-			this.btnImport.Size = new System.Drawing.Size(94, 25);
-			this.btnImport.TabIndex = 9;
-			this.btnImport.Text = "Import excel";
-			this.btnImport.UseVisualStyleBackColor = true;
-			this.btnImport.Visible = false;
-			this.btnImport.Click += new System.EventHandler(this.btnImport_Click);
 			// 
 			// btnCopyB
 			// 
@@ -149,7 +134,9 @@
 			this.cbConvetType.FormattingEnabled = true;
 			this.cbConvetType.Items.AddRange(new object[] {
             "Hex -> Big Integer",
-            "Big Integer -> Hex"});
+            "Big Integer -> Hex",
+            "Timestamp -> DateTime",
+            "DateTime ->Timestamp"});
 			this.cbConvetType.Location = new System.Drawing.Point(0, 0);
 			this.cbConvetType.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
 			this.cbConvetType.Name = "cbConvetType";
@@ -184,7 +171,6 @@
 		private System.Windows.Forms.Button btnCopyA;
 		private System.Windows.Forms.Button button2;
 		private System.Windows.Forms.Button btnCopyB;
-		private System.Windows.Forms.Button btnImport;
 	}
 }
 
