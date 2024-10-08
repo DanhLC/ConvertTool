@@ -14,9 +14,12 @@ namespace ConvertApp
 	/// </summary>
 	public partial class Main : Form
 	{
+		private readonly IService _service;
+
 		public Main()
 		{
 			InitializeComponent();
+			_service = new CGlobal();
 
 			// First Load
 			cbConvetType.SelectedIndex = 0;
@@ -55,10 +58,10 @@ namespace ConvertApp
 						{
 							var newDatas = string.Empty;
 
-							if (type == 0) newDatas = CGlobal.HexToBigInteger(item.ToString());
-							else if (type == 1) newDatas = CGlobal.BigIntegerToHex(item.ToString());
-							else if (type == 2) newDatas = CGlobal.TimestampToDateTime(item.ToString());
-							else if (type == 3) newDatas = CGlobal.DateTimeToTimestamp(item.ToString());
+							if (type == 0) newDatas = _service.HexToBigInteger(item.ToString());
+							else if (type == 1) newDatas = _service.BigIntegerToHex(item.ToString());
+							else if (type == 2) newDatas = _service.TimestampToDateTime(item.ToString());
+							else if (type == 3) newDatas = _service.DateTimeToTimestamp(item.ToString());
 
 							convertDatas += string.Format("{0}\r\n", newDatas);
 						}
@@ -160,7 +163,7 @@ namespace ConvertApp
 					var identityNumber = 1;
 					foreach (var data in readDatas)
 					{
-						if (CGlobal.IsEmptyString(data)) continue;
+						if (_service.IsEmptyString(data)) continue;
 
 						worksheet1.Cells[rowInitDetail, 1].Value = identityNumber;
 						worksheet1.Cells[rowInitDetail, 1].Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
@@ -171,10 +174,10 @@ namespace ConvertApp
 
 						var transferData = string.Empty;
 
-						if (typeExcute == 0) transferData = CGlobal.HexToBigInteger(data);
-						else if (typeExcute == 1) transferData = CGlobal.BigIntegerToHex(data);
-						else if (typeExcute == 2) transferData = CGlobal.TimestampToDateTime(data);
-						else if (typeExcute == 3) transferData = CGlobal.DateTimeToTimestamp(data); 
+						if (typeExcute == 0) transferData = _service.HexToBigInteger(data);
+						else if (typeExcute == 1) transferData = _service.BigIntegerToHex(data);
+						else if (typeExcute == 2) transferData = _service.TimestampToDateTime(data);
+						else if (typeExcute == 3) transferData = _service.DateTimeToTimestamp(data); 
 						
 						worksheet1.Cells[rowInitDetail, 3].Value = transferData;
 						worksheet1.Cells[rowInitDetail, 3].Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;

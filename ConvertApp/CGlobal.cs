@@ -5,14 +5,14 @@ using System.Numerics;
 
 namespace ConvertApp
 {
-	public class CGlobal
+	public class CGlobal : IService
 	{
 		/// <summary>
 		/// Convert to long
 		/// </summary>
 		/// <param name="obj"></param>
 		/// <returns></returns>
-		public static long ToLong(object obj)
+		public long ToLong(object obj)
 		{
 			try
 			{
@@ -30,7 +30,7 @@ namespace ConvertApp
 		/// Biginteger to hex
 		/// </summary>
 		/// <param name="strBigInteger">Big integer string</param>
-		public static string BigIntegerToHex(string strBigInteger)
+		public string BigIntegerToHex(string strBigInteger)
 		{
 			try
 			{
@@ -49,7 +49,7 @@ namespace ConvertApp
 		/// Hex to biginteger
 		/// </summary>
 		/// <param name="strHex">Hex string</param>
-		public static string HexToBigInteger(string strHex)
+		public string HexToBigInteger(string strHex)
 		{
 			try
 			{
@@ -66,7 +66,7 @@ namespace ConvertApp
 		/// </summary>
 		/// <param name="timeStamp"></param>
 		/// <returns></returns>
-		public static string TimestampToDateTime(object timeStamp)
+		public string TimestampToDateTime(object timeStamp)
 		{
 			try
 			{
@@ -91,7 +91,7 @@ namespace ConvertApp
 		/// </summary>
 		/// <param name="datetime"></param>
 		/// <returns></returns>
-		public static string DateTimeToTimestamp(object datetime)
+		public string DateTimeToTimestamp(object datetime)
 		{
 			try
 			{
@@ -117,7 +117,7 @@ namespace ConvertApp
 		/// <param name="obj"></param>
 		/// <param name="format"></param>
 		/// <returns></returns>
-		public static DateTime? ToDateTimenullWithFormat(object obj, string format = "dd/MM/yyyy")
+		public DateTime? ToDateTimenullWithFormat(object obj, string format = "dd/MM/yyyy")
 		{
 			try
 			{
@@ -136,7 +136,7 @@ namespace ConvertApp
 		/// </summary>
 		/// <param name="obj"></param>
 		/// <returns></returns>
-		public static bool IsEmptyString(string obj)
+		public bool IsEmptyString(string obj)
 		{
 			try
 			{
@@ -153,7 +153,7 @@ namespace ConvertApp
 		/// </summary>
 		/// <param name="format"></param>
 		/// <returns></returns>
-		public static string ValidDateFormat(string format)
+		public string ValidDateFormat(string format)
 		{
 			try
 			{
@@ -181,7 +181,7 @@ namespace ConvertApp
 		/// <param name="format"></param>
 		/// <param name="result"></param>
 		/// <returns></returns>
-		public static bool IsValidDateTimeFormat(string format, out DateTime result)
+		public bool IsValidDateTimeFormat(string format, out DateTime result)
 		{
 			result = DateTime.MinValue;
 
